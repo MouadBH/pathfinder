@@ -5,10 +5,14 @@
     display: inline-block;
 }
 
-.node-finish {
+.node-end {
     background-color: red;
 }
   
 .node-start {
     background-color: green;
+}
+
+.node-wall {
+    background-color: rgb(40, 189, 255);
 }
