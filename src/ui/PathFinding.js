@@ -29,12 +29,13 @@ export default class PathFinding extends Component {
                         return (
                             <div className="squares-row" key={rowIdx}>
                                 {row.map((node, nodeIdx) => {
-                                    const { row, col, isFinish, isStart, isWall } = node;
+                                    const { row, col, isEnd, isStart, isWall } = node;
+                                    console.log(node);
                                     return (
                                         <Node
                                             key={nodeIdx}
                                             col={col}
-                                            isFinish={isFinish}
+                                            isEnd={isEnd}
                                             isStart={isStart}
                                             isWall={isWall}                                            
                                             row={row}></Node>
@@ -66,7 +67,7 @@ const createNode = (col, row) => {
         col,
         row,
         isStart: row === START_NODE_ROW && col === START_NODE_COL,
-        isFinish: row === END_NODE_ROW && col === END_NODE_COL,
+        isEnd: row === END_NODE_ROW && col === END_NODE_COL,
         distance: Infinity,
         isVisited: false,
         isWall: false,
