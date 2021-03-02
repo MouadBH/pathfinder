@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Node from "./node/Node";
+import './PathFinding.css'
 
 const START_NODE_ROW = 10;
 const START_NODE_COL = 15;
@@ -20,13 +21,32 @@ export default class PathFinding extends Component {
     }
 
     render() {
-        console.log(this.state.grid);
+        const {grid} = this.state;
         return (
-          <>
-           
-          </>
+            <>
+                <div className="grid">
+                    {grid.map((row, rowIdx) => {
+                        return (
+                            <div className="squares-row" key={rowIdx}>
+                                {row.map((node, nodeIdx) => {
+                                    const { row, col, isFinish, isStart, isWall } = node;
+                                    return (
+                                        <Node
+                                            key={nodeIdx}
+                                            col={col}
+                                            isFinish={isFinish}
+                                            isStart={isStart}
+                                            isWall={isWall}                                            
+                                            row={row}></Node>
+                                    );
+                                })}
+                            </div>
+                        );
+                    })}
+                </div>
+            </>
         );
-      }
+    }
 }
 
 const getInitialGrid = () => {
