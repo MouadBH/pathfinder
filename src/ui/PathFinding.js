@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Node from "./node/Node";
+import { dijkstra, getNodesInShortestPathOrder } from '../algorithms/dijkstra'
 import './PathFinding.css'
 
 export default class PathFinding extends Component {
@@ -7,6 +8,7 @@ export default class PathFinding extends Component {
         super();
         this.state = {
             grid: [],
+            nodesInShortestPathOrder: [],
             mouseIsPressed: false,
             isSetStartNode: false,
             isSetEndNode: false,
@@ -21,7 +23,19 @@ export default class PathFinding extends Component {
         const grid = this.getInitialGrid();
         this.setState({ grid });
     }
-
+    resetGrid(){
+        for (let i = 0; i < this.state.nodesInShortestPathOrder.length; i++) {
+            const node = this.state.nodesInShortestPathOrder[i]
+            if (node.row === this.state.startNodeRow && node.col === this.state.startNodeCol) 
+                document.getElementById(`node-${node.row}-${node.col}`).className = 'node node-start'
+            else if (node.row === this.state.endNodeRow && node.col === this.state.endNodeCol) 
+                document.getElementById(`node-${node.row}-${node.col}`).className = 'node node-end'
+            else 
+                document.getElementById(`node-${node.row}-${node.col}`).className = 'node'
+        }
+        const grid = this.getInitialGrid();
+        this.setState({ grid });
+    }
     setStartNode() {
         this.setState({ isSetStartNode: !this.state.isSetStartNode })
     }
@@ -33,14 +47,15 @@ export default class PathFinding extends Component {
     updateStartEndNode = (grid, row, col) => {
         const newGrid = grid.slice();
         const node = newGrid[row][col];
-        if(this.state.isSetStartNode){
+        // Ugly code Ik xD
+        if (this.state.isSetStartNode) {
             newGrid[this.state.startNodeRow][this.state.startNodeCol].isStart = !newGrid[this.state.startNodeRow][this.state.startNodeCol].isStart
             const newNode = {
                 ...node,
                 isStart: !node.isStart,
             };
             newGrid[row][col] = newNode;
-        }else if(this.state.isSetEndNode){
+        } else if (this.state.isSetEndNode) {
             newGrid[this.state.endNodeRow][this.state.endNodeCol].isEnd = !newGrid[this.state.endNodeRow][this.state.endNodeCol].isEnd
             const newNode = {
                 ...node,
@@ -48,7 +63,7 @@ export default class PathFinding extends Component {
             };
             newGrid[row][col] = newNode;
         }
-        
+
         return newGrid;
     }
 
@@ -58,7 +73,7 @@ export default class PathFinding extends Component {
             this.updateStartEndNode(this.state.grid, row, col)
             this.setStartNode()
             return;
-        }else if(this.state.isSetEndNode){
+        } else if (this.state.isSetEndNode) {
             this.setState({ endNodeRow: row, endNodeCol: col })
             this.updateStartEndNode(this.state.grid, row, col)
             this.setEndNode()
@@ -114,16 +129,41 @@ export default class PathFinding extends Component {
         return newGrid;
     }
 
+    applyDijkstra() {
+        const { grid } = this.state;
+        const startNode = grid[this.state.startNodeRow][this.state.startNodeCol]
+        const endNode = grid[this.state.endNodeRow][this.state.endNodeCol]
+        dijkstra(grid, startNode, endNode)
+        const nodesInShortestPathOrder = getNodesInShortestPathOrder(endNode)
+        this.setState({nodesInShortestPathOrder: nodesInShortestPathOrder})
+        this.animateShortestPath(nodesInShortestPathOrder)
+    }
+
+    animateShortestPath(nodesInShortestPathOrder) {
+        for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+            setTimeout(() => {
+                const node = nodesInShortestPathOrder[i]
+                document.getElementById(`node-${node.row}-${node.col}`).className = 'node node-shortest-path'
+            }, 50 * i)
+        }
+    }
+
     render() {
         const { grid, mouseIsPressed } = this.state;
-        console.log(this.state);
+        //console.log(this.state);
         return (
             <>
+                <button onClick={() => this.applyDijkstra()}>
+                    Dijkstra's Algorithm
+                </button>
                 <button onClick={() => this.setStartNode()}>
                     Set Start Point
                 </button>
                 <button onClick={() => this.setEndNode()}>
                     Set End Point
+                </button>
+                <button onClick={() => this.resetGrid()}>
+                    Reset Grid
                 </button>
                 <div className="grid">
                     {grid.map((row, rowIdx) => {
