@@ -16,3 +16,7 @@
 .node-wall {
     background-color: rgb(40, 189, 255);
 }
+
+.node-shortest-path {
+    background-color: rgb(255, 254, 106);
+}
